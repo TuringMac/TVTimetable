@@ -2,12 +2,21 @@
 //
 
 #include <iostream>
+#include "Timetable.h"
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-    system("cls");
-    std::cout << "Привет мир!\n";
+	setlocale(LC_ALL, "Russian");
+	system("cls");
+	std::cout << "Привет мир!\n";
+	Timetable* tt = new Timetable("timetable1.txt");
+
+	tt->ReadFromFile();
+	tt->Print();
+	tt->Add(4, 2000, "Смак", 12);
+	tt->Add(4, 2200, "Спокойной ночи, малыши");
+	tt->Print();
+	tt->SaveToFile();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -5,13 +5,16 @@
 #include <list>
 #include <string>
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
+
+const string DATE_TIME_FORMAT = "%Y-%m-%d %H:%M";
 
 struct TimetableRow {
 	int Id = -1;
 	int channel;
-	int time;
+	chrono::system_clock::time_point time;
 	//char programName[80];
 	string programName;
 	int age = -1;
@@ -63,12 +66,12 @@ public:
 		}
 		for (TimetableRow row : rows)
 		{
-			out << row.Id << '\t' << row.channel << '\t' << row.time << '\t' << row.programName << '\t' << row.age << '\n';
+			out << row.Id << '\t' << row.channel << '\t' << date::format(DATE_TIME_FORMAT, row.time) << '\t' << row.programName << '\t' << row.age << '\n';
 		}
 		out.close();
 		return true;
 	}
-	void Add(int channel, int time, string programName, int age = 0)
+	void Add(int channel, chrono::system_clock::time_point time, string programName, int age = 0)
 	{
 		TimetableRow row;
 		row.Id = getId();
@@ -105,14 +108,16 @@ public:
 			stream >> row.channel;
 		}
 		cout << "Введите время передачи(Например: 1830 или 2115)";
-		if (row.time != 0)
-			cout << "[" << row.time << "]";
+		//if (row.time.time_since_epoch() == default)
+		cout << "[" << date::format(DATE_TIME_FORMAT, row.time) << "]";
 		cout << ": ";
 		cin.get();
 		getline(cin, input);
 		if (!input.empty()) {
+			tm tm = {};
 			std::istringstream stream(input);
-			stream >> row.time;
+			stream >> std::get_time(&tm, DATE_TIME_FORMAT.c_str());
+			row.time = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 		}
 		cout << "Введите название программы";
 		if (!row.programName.empty())
@@ -127,6 +132,8 @@ public:
 		if (row.age != -1)
 			cout << "[" << row.age << "]";
 		cout << ": ";
+		cin.get();
+		getline(cin, input);
 		if (!input.empty()) {
 			std::istringstream stream(input);
 			stream >> row.age;
@@ -156,7 +163,7 @@ public:
 		cout << "-------- Избранное --------\n";
 		for (TimetableRow row : rows)
 		{
-			cout << row.Id << '\t' << row.channel << '\t' << row.time / 100 << ":" << row.time % 100 << '\t' << row.programName << '\t' << row.age << '\n';
+			cout << row.Id << '\t' << row.channel << '\t' << date::format(DATE_TIME_FORMAT, row.time) << '\t' << row.programName << '\t' << row.age << '\n';
 		}
 		cout << "---------------------------\n";
 	}
@@ -197,12 +204,12 @@ private:
 	/// <summary>
 	/// FR-03 Проверка записи на корректность
 	/// </summary>
-	/// <param name="str"></param>
+	/// <param name="row"></param>
 	/// <returns></returns>
 	TimetableRow sanitizeRow(TimetableRow row)
 	{
 		row.programName.erase(remove(row.programName.begin(), row.programName.end(), '\t'), row.programName.end());
-		row.time = (row.time / 100) % 24 * 100 + (row.time % 100) % 60;
+		//row.time = (row.time / 100) % 24 * 100 + (row.time % 100) % 60;
 		row.age = abs(row.age);
 		return row;
 	}
@@ -235,7 +242,10 @@ private:
 		getline(iss, part, '\t');
 		row.channel = stoi(part);
 		getline(iss, part, '\t');
-		row.time = stoi(part);
+		tm tm = {};
+		stringstream ss(part);
+		ss >> std::get_time(&tm, DATE_TIME_FORMAT.c_str());
+		row.time = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 		getline(iss, part, '\t');
 		row.programName = part;
 		getline(iss, part, '\t');

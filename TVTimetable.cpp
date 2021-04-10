@@ -47,7 +47,7 @@ int main()
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	system("cls");
-	string curDate = date::format("%F %T", std::chrono::system_clock::now());
+	string curDate = date::format("%F %T", chrono::system_clock::now());
 
 	cout << "Запущено: " << curDate << endl << "Программа ТВ передач" << endl;
 	LogMessage(curDate); // FR-01 Сохранение даты и времени запуска приложения
@@ -69,7 +69,7 @@ int main()
 			break;
 		case 2:
 			system("cls");
-			tt->Sort(3);
+			tt->Sort(2);
 			tt->Print();
 			cin.ignore();
 			cin.get();

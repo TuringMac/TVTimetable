@@ -2,19 +2,26 @@
 //
 
 #include <iostream>
+#include <windows.h>
 #include "Timetable.h"
+
+using namespace std;
 
 int main()
 {
 	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 	system("cls");
-	std::cout << "Привет мир!\n";
+	cout << "Программа ТВ передач" << endl;
+
 	Timetable* tt = new Timetable("timetable1.txt");
 
 	tt->ReadFromFile();
 	tt->Print();
-	tt->Add(4, 2000, "Смак", 12);
-	tt->Add(4, 2200, "Спокойной ночи, малыши");
+	tt->Add(tt->InputRecoord());
+	//tt->Add(2, 2000, "Смак", 12);
+	//tt->Add(4, 2200, "Спокойной ночи, малыши");
 	tt->Print();
 	tt->SaveToFile();
 }

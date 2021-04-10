@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -11,7 +12,8 @@ struct TimetableRow {
 	int Id;
 	int channel;
 	int time;
-	char programName[80];
+	//char programName[80];
+	string programName;
 	int age;
 };
 
@@ -52,27 +54,40 @@ public:
 		}
 		for (TimetableRow row : rows)
 		{
+			row.programName = sanitizeString(row.programName);
 			out << row.Id << '\t' << row.channel << '\t' << row.time << '\t' << row.programName << '\t' << row.age << '\n';
-			/*
-			out.write((char*)row.Id, sizeof(row.Id));
-			out.write((char*)row.channel, sizeof(row.channel));
-			out.write((char*)row.time, sizeof(row.time));
-			out.write((char*)row.programName, sizeof(row.programName));
-			out.write((char*)row.age, sizeof(row.age));
-			*/
 		}
 		out.close();
 		return true;
 	}
-	void Add(int channel, int time, std::string programName, int age = 0)
+	void Add(int channel, int time, string programName, int age = 0)
 	{
 		TimetableRow row;
 		row.Id = getId();
 		row.channel = channel;
 		row.time = time;
-		//row.programName = programName; // TODO
+		row.programName = programName;
 		row.age = age;
 		rows.push_back(row);
+	}
+	void Add(TimetableRow row)
+	{
+		rows.push_back(row);
+	}
+	TimetableRow InputRecoord()
+	{
+		TimetableRow row;
+		row.Id = getId();
+		cout << "¬ведите номер канала:";
+		cin >> row.channel;
+		cout << "¬ведите врем€ передачи:";
+		cin >> row.time;
+		cout << "¬ведите название программы:";
+		cin.ignore();
+		getline(cin, row.programName);
+		cout << "¬ведите возрастные ограничени€:";
+		cin >> row.age;
+		return row;
 	}
 	/// <summary>
 	/// FR-04 —ортировка записей в файле
@@ -120,13 +135,20 @@ private:
 	/// </summary>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	char* sanitizeString(char* str)
+	string sanitizeString(string str)
 	{
-		// TODO check string for \t entrance
+		str.erase(remove(str.begin(), str.end(), '\t'), str.end());
+		return str;
 	}
 	int getId()
 	{
-		return std::rand();
+		int newId = 0;
+		for (TimetableRow row : rows)
+		{
+			if (row.Id > newId)
+				newId = row.Id;
+		}
+		return newId == 0 ? std::rand() : (newId + 1);
 	}
 	TimetableRow parseLine(string line)
 	{
@@ -140,7 +162,7 @@ private:
 		getline(iss, part, '\t');
 		row.time = stoi(part);
 		getline(iss, part, '\t');
-		//row.programName = part; // TODO
+		row.programName = part;
 		getline(iss, part, '\t');
 		row.age = stoi(part);
 

@@ -9,12 +9,12 @@
 using namespace std;
 
 struct TimetableRow {
-	int Id;
+	int Id = -1;
 	int channel;
 	int time;
 	//char programName[80];
 	string programName;
-	int age;
+	int age = -1;
 
 	bool operator == (const TimetableRow& row) const
 	{
@@ -87,16 +87,50 @@ public:
 	TimetableRow InputRecoord()
 	{
 		TimetableRow row;
-		row.Id = getId();
-		cout << "Введите номер канала:";
-		cin >> row.channel;
-		cout << "Введите время передачи(Например: 1830 или 2115): ";
-		cin >> row.time;
-		cout << "Введите название программы: ";
+		return InputRecoord(row);
+	}
+	TimetableRow InputRecoord(TimetableRow& row)
+	{
+		if (row.Id == -1)
+			row.Id = getId();
+		string input;
+		cout << "Введите номер канала";
+		if (row.channel != 0)
+			cout << "[" << row.channel << "]";
+		cout << ": ";
 		cin.get();
-		getline(cin, row.programName);
-		cout << "Введите возрастные ограничения: ";
-		cin >> row.age; // TODO обрезается первая цифра
+		getline(cin, input);
+		if (!input.empty()) {
+			std::istringstream stream(input);
+			stream >> row.channel;
+		}
+		cout << "Введите время передачи(Например: 1830 или 2115)";
+		if (row.time != 0)
+			cout << "[" << row.time << "]";
+		cout << ": ";
+		cin.get();
+		getline(cin, input);
+		if (!input.empty()) {
+			std::istringstream stream(input);
+			stream >> row.time;
+		}
+		cout << "Введите название программы";
+		if (!row.programName.empty())
+			cout << "[" << row.programName << "]";
+		cout << ": ";
+		cin.get();
+		getline(cin, input);
+		if (!input.empty()) {
+			row.programName = input;
+		}
+		cout << "Введите возрастные ограничения";
+		if (row.age != -1)
+			cout << "[" << row.age << "]";
+		cout << ": ";
+		if (!input.empty()) {
+			std::istringstream stream(input);
+			stream >> row.age;
+		}
 		return row;
 	}
 	/// <summary>
@@ -146,6 +180,17 @@ public:
 		SaveToFile();
 		return true;
 	}
+	/// <summary>
+	/// FR-05 Изменить определенную запись
+	/// </summary>
+	/// <param name="line"></param>
+	/// <returns></returns>
+	bool Edit(int id)
+	{
+		TimetableRow& row = getById(id);
+		InputRecoord(row);
+		return true;
+	}
 private:
 	string filename;
 	list<TimetableRow> rows;
@@ -171,9 +216,9 @@ private:
 		}
 		return newId == 0 ? std::rand() : (newId + 1);
 	}
-	TimetableRow getById(int id)
+	TimetableRow& getById(int id)
 	{
-		for (TimetableRow row : rows)
+		for (TimetableRow& row : rows)
 		{
 			if (row.Id == id) return row;
 		}

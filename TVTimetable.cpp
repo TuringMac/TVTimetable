@@ -33,6 +33,7 @@ int Menu(int page = 0)
 	cout << "[" << i++ << "]" << " Удалить отслеживаемую программу" << endl;
 	cout << "[" << i++ << "]" << " Очистить список" << endl;
 	cout << "[" << i++ << "]" << " Сохранить" << endl;
+	cout << "[" << i++ << "]" << " Редактировать запись" << endl;
 
 	cout << "[-1]" << " Выход" << endl;
 	cout << " Укажите пункт меню: ";
@@ -103,6 +104,17 @@ int main()
 			system("cls");
 			tt->SaveToFile();
 			cout << "Сохранено" << endl;
+			cin.ignore();
+			cin.get();
+			break;
+		case 7:
+			system("cls");
+			tt->Print();
+			cout << "Укажите Ид записи для редактирования: ";
+			cin >> id;
+			tt->Edit(id);
+			system("cls");
+			tt->Print();
 			cin.ignore();
 			cin.get();
 			break;

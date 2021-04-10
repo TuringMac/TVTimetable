@@ -23,5 +23,8 @@
     <ClInclude Include="Timetable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="date.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

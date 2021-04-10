@@ -21,6 +21,25 @@ void LogMessage(string msg)
 	out.close();
 }
 
+int Menu(int page = 0)
+{
+	int i = 0;
+	int menu = -1;
+	system("cls");
+	cout << "[" << i++ << "]" << " Вывести программу передач на сегодня" << endl;
+	cout << "[" << i++ << "]" << " Вывести отслеживаемые программы" << endl;
+	cout << "[" << i++ << "]" << " Отсортировать отслеживаемые программы" << endl;
+	cout << "[" << i++ << "]" << " Добавить отслеживаемую программу" << endl;
+	cout << "[" << i++ << "]" << " Удалить отслеживаемую программу" << endl;
+	cout << "[" << i++ << "]" << " Очистить список" << endl;
+	cout << "[" << i++ << "]" << " Сохранить" << endl;
+
+	cout << "[-1]" << " Выход" << endl;
+	cout << " Укажите пункт меню: ";
+	cin >> menu;
+	return menu;
+}
+
 int main()
 {
 	setlocale(LC_ALL, "Russian");
@@ -33,12 +52,62 @@ int main()
 	LogMessage(curDate); // FR-01 Сохранение даты и времени запуска приложения
 
 	Timetable* tt = new Timetable("timetable1.txt");
-
 	tt->ReadFromFile();
-	tt->Print();
-	tt->Add(tt->InputRecoord());
-	//tt->Add(2, 2000, "Смак", 12);
-	//tt->Add(4, 2200, "Спокойной ночи, малыши");
-	tt->Print();
-	tt->SaveToFile();
+	bool terminate = false;
+	while (!terminate)
+	{
+		int id = -1;
+		switch (Menu())
+		{
+		case 0: break;
+		case 1:
+			system("cls");
+			tt->Print();
+			cin.ignore();
+			cin.get();
+			break;
+		case 2:
+			system("cls");
+			tt->Sort(3);
+			tt->Print();
+			cin.ignore();
+			cin.get();
+			break;
+		case 3:
+			system("cls");
+			tt->Add(tt->InputRecoord());
+			tt->Print();
+			cin.ignore();
+			cin.get();
+			break;
+		case 4:
+			system("cls");
+			tt->Print();
+			cout << "Укажить ИД записи для удаления";
+			cin >> id;
+			tt->Delete(id);
+			tt->SaveToFile();
+			cout << "Очищено" << endl;
+			cin.ignore();
+			cin.get();
+			break;
+		case 5:
+			system("cls");
+			tt->Clear();
+			tt->SaveToFile();
+			cout << "Очищено" << endl;
+			cin.ignore();
+			cin.get();
+			break;
+		case 6:
+			system("cls");
+			tt->SaveToFile();
+			cout << "Сохранено" << endl;
+			cin.ignore();
+			cin.get();
+			break;
+		default:
+			terminate = true;
+		}
+	}
 }

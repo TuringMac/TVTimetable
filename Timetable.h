@@ -15,6 +15,11 @@ struct TimetableRow {
 	//char programName[80];
 	string programName;
 	int age;
+
+	bool operator == (const TimetableRow& row) const
+	{
+		return Id == row.Id;
+	}
 };
 
 class Timetable
@@ -44,6 +49,10 @@ public:
 		in.close();
 		return true;
 	}
+	/// <summary>
+	/// FR-02 Добавить запись в файл
+	/// </summary>
+	/// <returns></returns>
 	bool SaveToFile()
 	{
 		ofstream out(filename);
@@ -54,7 +63,6 @@ public:
 		}
 		for (TimetableRow row : rows)
 		{
-			row.programName = sanitizeString(row.programName);
 			out << row.Id << '\t' << row.channel << '\t' << row.time << '\t' << row.programName << '\t' << row.age << '\n';
 		}
 		out.close();
@@ -68,10 +76,12 @@ public:
 		row.time = time;
 		row.programName = programName;
 		row.age = age;
+		row = sanitizeRow(row);
 		rows.push_back(row);
 	}
 	void Add(TimetableRow row)
 	{
+		row = sanitizeRow(row);
 		rows.push_back(row);
 	}
 	TimetableRow InputRecoord()
@@ -80,13 +90,13 @@ public:
 		row.Id = getId();
 		cout << "Введите номер канала:";
 		cin >> row.channel;
-		cout << "Введите время передачи:";
+		cout << "Введите время передачи(Например: 1830 или 2115): ";
 		cin >> row.time;
-		cout << "Введите название программы:";
-		cin.ignore();
+		cout << "Введите название программы: ";
+		cin.get();
 		getline(cin, row.programName);
-		cout << "Введите возрастные ограничения:";
-		cin >> row.age;
+		cout << "Введите возрастные ограничения: ";
+		cin >> row.age; // TODO обрезается первая цифра
 		return row;
 	}
 	/// <summary>
@@ -95,17 +105,24 @@ public:
 	/// <param name="column"></param>
 	void Sort(int column)
 	{
-
+		switch (column)
+		{
+		case 0: rows.sort(compare_id); break;
+		case 1: rows.sort(compare_channel); break;
+		case 2: rows.sort(compare_time); break;
+		case 3: rows.sort(compare_programName); break;
+		default: return;
+		}
 	}
 	/// <summary>
 	/// FR-06 Вывести все записи в консоль
 	/// </summary>
 	void Print()
 	{
-		cout << "-------- Timetable --------\n";
+		cout << "-------- Избранное --------\n";
 		for (TimetableRow row : rows)
 		{
-			cout << row.Id << '\t' << row.channel << '\t' << row.time << '\t' << row.programName << '\t' << row.age << '\n';
+			cout << row.Id << '\t' << row.channel << '\t' << row.time / 100 << ":" << row.time % 100 << '\t' << row.programName << '\t' << row.age << '\n';
 		}
 		cout << "---------------------------\n";
 	}
@@ -116,7 +133,8 @@ public:
 	/// <returns></returns>
 	bool Delete(int id)
 	{
-
+		rows.remove(getById(id));
+		return true;
 	}
 	/// <summary>
 	/// FR-08 Удалить все записи
@@ -126,6 +144,7 @@ public:
 	{
 		rows.clear();
 		SaveToFile();
+		return true;
 	}
 private:
 	string filename;
@@ -135,10 +154,12 @@ private:
 	/// </summary>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	string sanitizeString(string str)
+	TimetableRow sanitizeRow(TimetableRow row)
 	{
-		str.erase(remove(str.begin(), str.end(), '\t'), str.end());
-		return str;
+		row.programName.erase(remove(row.programName.begin(), row.programName.end(), '\t'), row.programName.end());
+		row.time = (row.time / 100) % 24 * 100 + (row.time % 100) % 60;
+		row.age = abs(row.age);
+		return row;
 	}
 	int getId()
 	{
@@ -149,6 +170,15 @@ private:
 				newId = row.Id;
 		}
 		return newId == 0 ? std::rand() : (newId + 1);
+	}
+	TimetableRow getById(int id)
+	{
+		for (TimetableRow row : rows)
+		{
+			if (row.Id == id) return row;
+		}
+		TimetableRow row;
+		return row;
 	}
 	TimetableRow parseLine(string line)
 	{
@@ -167,6 +197,35 @@ private:
 		row.age = stoi(part);
 
 		return row;
+	}
+	static bool compare_id(const TimetableRow& first, const TimetableRow& second)
+	{
+		if (first.Id < second.Id) return true;
+		else if (first.Id > second.Id) return false;
+		else return true;
+	}
+	static bool compare_channel(const TimetableRow& first, const TimetableRow& second)
+	{
+		if (first.channel < second.channel) return true;
+		else if (first.channel > second.channel) return false;
+		else return true;
+	}
+	static bool compare_time(const TimetableRow& first, const TimetableRow& second)
+	{
+		if (first.time < second.time) return true;
+		else if (first.time > second.time) return false;
+		else return true;
+	}
+	static bool compare_programName(const TimetableRow& first, const TimetableRow& second)
+	{
+		unsigned int i = 0;
+		while ((i < first.programName.length()) && (i < second.programName.length()))
+		{
+			if (tolower(first.programName[i]) < tolower(second.programName[i])) return true;
+			else if (tolower(first.programName[i]) > tolower(second.programName[i])) return false;
+			++i;
+		}
+		return (first.programName.length() < second.programName.length());
 	}
 };
 

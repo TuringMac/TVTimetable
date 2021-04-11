@@ -123,7 +123,7 @@ public:
 		if (!row.programName.empty())
 			cout << "[" << row.programName << "]";
 		cout << ": ";
-		cin.get();
+		//cin.get();
 		getline(cin, input);
 		if (!input.empty()) {
 			row.programName = input;
@@ -132,7 +132,7 @@ public:
 		if (row.age != -1)
 			cout << "[" << row.age << "]";
 		cout << ": ";
-		cin.get();
+		//cin.get();
 		getline(cin, input);
 		if (!input.empty()) {
 			std::istringstream stream(input);

@@ -13,7 +13,7 @@ const string DATE_TIME_FORMAT = "%Y-%m-%d %H:%M";
 
 struct TimetableRow {
 	int Id = -1;
-	int channel;
+	int channel = 0;
 	chrono::system_clock::time_point time;
 	//char programName[80];
 	string programName;

@@ -26,19 +26,28 @@ int Menu(int page = 0)
 	int i = 0;
 	int menu = -1;
 	system("cls");
+	cout << "---=== Главное меню ===---" << endl;
 	cout << "[" << i++ << "]" << " Вывести программу передач на сегодня" << endl;
 	cout << "[" << i++ << "]" << " Вывести отслеживаемые программы" << endl;
-	cout << "[" << i++ << "]" << " Отсортировать отслеживаемые программы" << endl;
+	cout << "[" << i++ << "]" << " Отсортировать отслеживаемые программы по времени" << endl;
 	cout << "[" << i++ << "]" << " Добавить отслеживаемую программу" << endl;
 	cout << "[" << i++ << "]" << " Удалить отслеживаемую программу" << endl;
 	cout << "[" << i++ << "]" << " Очистить список" << endl;
 	cout << "[" << i++ << "]" << " Сохранить" << endl;
 	cout << "[" << i++ << "]" << " Редактировать запись" << endl;
+	cout << "[" << i++ << "]" << " Отсортировать отслеживаемые программы по алфавиту" << endl;
 
 	cout << "[-1]" << " Выход" << endl;
 	cout << " Укажите пункт меню: ";
 	cin >> menu;
 	return menu;
+}
+
+void back()
+{
+	cout << "Нажмите любую клавишу, чтобы вернутсья в меню...";
+	cin.ignore();
+	cin.get();
 }
 
 int main()
@@ -64,22 +73,19 @@ int main()
 		case 1:
 			system("cls");
 			tt->Print();
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 2:
 			system("cls");
 			tt->Sort(2);
 			tt->Print();
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 3:
 			system("cls");
 			tt->Add(tt->InputRecoord());
 			tt->Print();
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 4:
 			system("cls");
@@ -89,23 +95,20 @@ int main()
 			tt->Delete(id);
 			tt->SaveToFile();
 			cout << "Очищено" << endl;
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 5:
 			system("cls");
 			tt->Clear();
 			tt->SaveToFile();
 			cout << "Очищено" << endl;
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 6:
 			system("cls");
 			tt->SaveToFile();
 			cout << "Сохранено" << endl;
-			cin.ignore();
-			cin.get();
+			back();
 			break;
 		case 7:
 			system("cls");
@@ -115,8 +118,13 @@ int main()
 			tt->Edit(id);
 			system("cls");
 			tt->Print();
-			cin.ignore();
-			cin.get();
+			back();
+			break;
+		case 8:
+			system("cls");
+			tt->Sort(3);
+			tt->Print();
+			back();
 			break;
 		default:
 			terminate = true;
